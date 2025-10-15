@@ -1,0 +1,37 @@
+name: Update XHS Trends
+
+on:
+  schedule:
+    - cron: "0 2 * * 1"  # 每周一 02:00 UTC 运行（吉隆坡=UTC+8 → 周一 10:00）
+  workflow_dispatch: {}   # 允许你在 Actions 面板手动触发
+
+permissions:
+  contents: write   # 允许推送到仓库
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps (none required)
+        run: python -c "print('OK')"
+
+      - name: Run generator
+        run: |
+          python scripts/update_trends.py
+
+      - name: Commit & Push changes
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "actions@github.com"
+          git add xhs_trends.json
+          git diff --quiet && echo "No changes" || git commit -m "Auto-update trends: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          git push
