@@ -1,0 +1,71 @@
+{
+  "week_of": "2025-10-13",
+  "region": "GLOBAL",
+  "items": [
+    {
+      "keyword": "秋冬底妆",
+      "weight": 0.92,
+      "category": "beauty",
+      "decay_days": 10,
+      "priority": 2,
+      "sensitive_hint": false
+    },
+    {
+      "keyword": "平替",
+      "weight": 0.88,
+      "category": "skincare",
+      "decay_days": 14,
+      "priority": 1
+    },
+    {
+      "keyword": "护发修护",
+      "weight": 0.83,
+      "category": "haircare",
+      "decay_days": 7
+    },
+    {
+      "keyword": "开学季",
+      "weight": 0.78,
+      "category": "lifestyle",
+      "decay_days": 7
+    },
+    {
+      "keyword": "通勤穿搭",
+      "weight": 0.91,
+      "category": "fashion",
+      "decay_days": 12
+    },
+    {
+      "keyword": "家居收纳",
+      "weight": 0.86,
+      "category": "home",
+      "decay_days": 15
+    },
+    {
+      "keyword": "早晚护肤",
+      "weight": 0.84,
+      "category": "skincare",
+      "decay_days": 10
+    },
+    {
+      "keyword": "旅行攻略",
+      "weight": 0.89,
+      "category": "travel",
+      "decay_days": 14
+    },
+    {
+      "keyword": "双十一攻略",
+      "weight": 0.95,
+      "category": "shopping",
+      "decay_days": 7,
+      "sensitive_hint": true,
+      "safe_replacement": "大促清单"
+    },
+    {
+      "keyword": "咖啡自由",
+      "weight": 0.82,
+      "category": "lifestyle",
+      "decay_days": 14
+    }
+  ]
+}
