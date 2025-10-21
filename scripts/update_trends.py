@@ -7,7 +7,7 @@ from collections import defaultdict
 # ================== 基本设置 ==================
 TODAY      = datetime.date.today()
 WEEK_OF    = TODAY.isoformat()
-REGION     = os.environ.get("REGION_HINT", "GLOBAL").upper()  # 可设 CN / MY / SG
+REGION     = os.environ.get("REGION_HINT", "MY").upper()  # 可设 CN / MY / SG
 OPENHOT_XHS = "https://open-hot-api.vercel.app/api/getlist?type=xiaohongshu"
 
 ROOT        = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
