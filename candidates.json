@@ -1,40 +1,46 @@
 {
   "items": [
+    /* 👗 穿搭 */
     {"keyword": "通勤穿搭", "weight": 0.93, "category": "fashion", "decay_days": 14, "priority": 2},
     {"keyword": "秋冬穿搭", "weight": 0.90, "category": "fashion", "decay_days": 10, "priority": 2},
     {"keyword": "平价穿搭", "weight": 0.88, "category": "fashion", "decay_days": 10, "priority": 1},
-    {"keyword": "OOTD", "weight": 0.82, "category": "fashion", "decay_days": 12, "priority": 1},
+    {"keyword": "OOTD",     "weight": 0.82, "category": "fashion", "decay_days": 12, "priority": 1},
 
-    {"keyword": "健康餐", "weight": 0.88, "category": "food", "decay_days": 10, "priority": 1},
+    /* 🍣 美食 */
+    {"keyword": "健康餐",   "weight": 0.88, "category": "food", "decay_days": 10, "priority": 1},
     {"keyword": "咖啡自由", "weight": 0.86, "category": "food", "decay_days": 14, "priority": 1},
     {"keyword": "懒人料理", "weight": 0.83, "category": "food", "decay_days": 10},
-    {"keyword": "一人食", "weight": 0.88, "category": "food", "decay_days": 15},
-    {"keyword": "夜宵分享", "weight": 0.80, "category": "food", "decay_days": 7},
+    {"keyword": "一人食",   "weight": 0.88, "category": "food", "decay_days": 15},
 
+    /* 💄 美妆 */
     {"keyword": "平价粉底液", "weight": 0.93, "category": "beauty", "decay_days": 10},
-    {"keyword": "秋冬底妆", "weight": 0.92, "category": "beauty", "decay_days": 12, "priority": 2},
-    {"keyword": "护发修护", "weight": 0.84, "category": "beauty", "decay_days": 14},
-    {"keyword": "平替精华", "weight": 0.90, "category": "beauty", "decay_days": 10},
-    {"keyword": "早晚护肤", "weight": 0.86, "category": "beauty", "decay_days": 15},
+    {"keyword": "秋冬底妆",   "weight": 0.92, "category": "beauty", "decay_days": 12, "priority": 2},
+    {"keyword": "护发修护",   "weight": 0.84, "category": "beauty", "decay_days": 14},
+    {"keyword": "平替精华",   "weight": 0.90, "category": "beauty", "decay_days": 10},
+    {"keyword": "早晚护肤",   "weight": 0.86, "category": "beauty", "decay_days": 15},
 
+    /* 🏋️‍♀️ 运动 */
     {"keyword": "居家健身", "weight": 0.90, "category": "fitness", "decay_days": 12},
     {"keyword": "跑步记录", "weight": 0.85, "category": "fitness", "decay_days": 14},
     {"keyword": "健身打卡", "weight": 0.86, "category": "fitness", "decay_days": 10},
     {"keyword": "运动穿搭", "weight": 0.87, "category": "fitness", "decay_days": 10},
     {"keyword": "瑜伽日常", "weight": 0.84, "category": "fitness", "decay_days": 12},
 
+    /* ✈️ 旅行 */
     {"keyword": "周末短途游", "weight": 0.88, "category": "travel", "decay_days": 15},
-    {"keyword": "旅行攻略", "weight": 0.90, "category": "travel", "decay_days": 10, "priority": 2},
-    {"keyword": "vlog记录", "weight": 0.86, "category": "travel", "decay_days": 12},
-    {"keyword": "出行收纳", "weight": 0.85, "category": "travel", "decay_days": 10},
-    {"keyword": "露营生活", "weight": 0.84, "category": "travel", "decay_days": 14},
+    {"keyword": "旅行攻略",   "weight": 0.90, "category": "travel", "decay_days": 10, "priority": 2},
+    {"keyword": "vlog记录",   "weight": 0.86, "category": "travel", "decay_days": 12},
+    {"keyword": "出行收纳",   "weight": 0.85, "category": "travel", "decay_days": 10},
+    {"keyword": "露营生活",   "weight": 0.84, "category": "travel", "decay_days": 14},
 
-    {"keyword": "猫咪日常", "weight": 0.90, "category": "pet", "decay_days": 14},
-    {"keyword": "狗狗日常", "weight": 0.88, "category": "pet", "decay_days": 14},
-    {"keyword": "宠物用品测评", "weight": 0.86, "category": "pet", "decay_days": 10},
-    {"keyword": "毛孩子摄影", "weight": 0.82, "category": "pet", "decay_days": 12},
-    {"keyword": "宠物互动", "weight": 0.84, "category": "pet", "decay_days": 10},
+    /* 🐶 宠物 */
+    {"keyword": "猫咪日常",       "weight": 0.90, "category": "pet", "decay_days": 14},
+    {"keyword": "狗狗日常",       "weight": 0.88, "category": "pet", "decay_days": 14},
+    {"keyword": "宠物用品测评",   "weight": 0.86, "category": "pet", "decay_days": 10},
+    {"keyword": "毛孩子摄影",     "weight": 0.82, "category": "pet", "decay_days": 12},
+    {"keyword": "宠物互动",       "weight": 0.84, "category": "pet", "decay_days": 10},
 
-    {"keyword": "大促清单", "weight": 0.95, "category": "shopping", "decay_days": 7, "priority": 3}
+    /* 🛍️ 大促季（敏感替换演示：如出现“双十一攻略”→替换为“大促清单”） */
+    {"keyword": "双十一攻略", "weight": 0.95, "category": "shopping", "decay_days": 7, "priority": 3, "sensitive_hint": true, "safe_replacement": "大促清单"}
   ]
 }
