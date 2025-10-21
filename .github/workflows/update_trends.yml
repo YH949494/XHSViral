@@ -32,7 +32,7 @@ jobs:
 
       - name: Run generator
         env:
-          REGION_HINT: CN    # CN/MY/SG/GLOBAL，随需
+          REGION_HINT: MY    # CN/MY/SG/GLOBAL，随需
         run: |
           python scripts/update_trends.py
 
