@@ -2,11 +2,11 @@ name: Update XHS Trends
 
 on:
   schedule:
-    - cron: "0 1 * * 1-5" #工作日每天 09:00（KL）
+    - cron: "0 1 * * *"      # 每天 01:00 UTC = 马来西亚 09:00
   workflow_dispatch: {}
 
 permissions:
-  contents: write   # 允许推送到仓库
+  contents: write
 
 jobs:
   build:
@@ -15,25 +15,73 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Show current branch and files
+        run: |
+          echo "Branch: $(git rev-parse --abbrev-ref HEAD)"
+          ls -la
+          test -f xhs_trends.json && head -n 20 xhs_trends.json || echo "xhs_trends.json not found yet"
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install deps (none required)
-        run: python -c "print('OK')"
-
       - name: Run generator
         env:
-          REGION_HINT: MY   # CN / MY / SG / GLOBAL
+          REGION_HINT: CN    # CN/MY/SG/GLOBAL，随需
         run: |
           python scripts/update_trends.py
+
+      - name: Show new file head
+        run: |
+          echo "---- NEW xhs_trends.json ----"
+          head -n 40 xhs_trends.json
+
+      - name: Validate output (must be today & have items)
+        run: |
+          python - <<'PY'
+          import json, datetime, sys
+          d = json.load(open('xhs_trends.json', encoding='utf-8'))
+          today = datetime.date.today().isoformat()
+          assert d.get('week_of') == today, f"week_of={d.get('week_of')} != {today}"
+          items = d.get('items', [])
+          assert isinstance(items, list) and len(items) >= 10, f"items too few: {len(items)}"
+          print("Validation OK:", today, "items:", len(items))
+          PY
 
       - name: Commit & Push changes
         run: |
           git config user.name "GitHub Action"
           git config user.email "actions@github.com"
           git add xhs_trends.json
-          git diff --quiet && echo "No changes" || git commit -m "Auto-update trends: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          git push
+          if git diff --cached --quiet ; then
+            echo "No changes to commit (content identical)."
+          else
+            git commit -m "Auto-update trends: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            git push
+          fi
+
+      - name: Post run summary
+        run: |
+          echo "### XHS Trends Update ($(date -u))" >> $GITHUB_STEP_SUMMARY
+          python - <<'PY' >> $GITHUB_STEP_SUMMARY
+          import json, collections
+          d = json.load(open('xhs_trends.json', encoding='utf-8'))
+          items = d.get('items', [])
+          cats = collections.Counter([i.get('category','misc') for i in items])
+          print(f"- week_of: **{d.get('week_of')}**")
+          print(f"- items: **{len(items)}**")
+          print(f"- categories: {dict(cats)}")
+          print(f"- samples: {[i.get('keyword') for i in items[:8]]}")
+          PY
+
+      - name: Smoke test raw URL (after push)
+        run: |
+          URL="https://raw.githubusercontent.com/YH949494/XHSViral/main/xhs_trends.json?$(date +%s)"
+          echo "Testing $URL"
+          code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+          test "$code" = "200" || (echo "Raw URL $code" && exit 1)
