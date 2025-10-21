@@ -1,10 +1,10 @@
 {
   "week_of": "2025-10-21",
-  "region": "CN",
+  "region": "MY",
   "items": [
     {
       "keyword": "通勤穿搭",
-      "weight": 0.6576,
+      "weight": 0.5800000000000001,
       "category": "fashion",
       "decay_days": 14,
       "priority": 2,
@@ -36,7 +36,7 @@
     },
     {
       "keyword": "健康餐",
-      "weight": 0.89,
+      "weight": 0.5800000000000001,
       "category": "food",
       "decay_days": 10,
       "priority": 1,
@@ -44,7 +44,7 @@
     },
     {
       "keyword": "一人食",
-      "weight": 0.6368,
+      "weight": 0.5800000000000001,
       "category": "food",
       "decay_days": 15,
       "priority": 1,
@@ -52,7 +52,7 @@
     },
     {
       "keyword": "咖啡自由",
-      "weight": 0.6081,
+      "weight": 0.5800000000000001,
       "category": "food",
       "decay_days": 14,
       "priority": 1,
@@ -85,7 +85,7 @@
     },
     {
       "keyword": "早晚护肤",
-      "weight": 0.6223,
+      "weight": 0.5800000000000001,
       "category": "beauty",
       "decay_days": 15,
       "priority": 1,
@@ -93,7 +93,7 @@
     },
     {
       "keyword": "秋冬底妆",
-      "weight": 0.614,
+      "weight": 0.5800000000000001,
       "category": "beauty",
       "decay_days": 12,
       "priority": 1,
@@ -101,7 +101,7 @@
     },
     {
       "keyword": "护发修护",
-      "weight": 0.594,
+      "weight": 0.5800000000000001,
       "category": "beauty",
       "decay_days": 14,
       "priority": 1,
@@ -125,7 +125,7 @@
     },
     {
       "keyword": "大促清单",
-      "weight": 0.96,
+      "weight": 0.5800000000000001,
       "category": "shopping",
       "decay_days": 7,
       "priority": 3,
@@ -142,7 +142,7 @@
     },
     {
       "keyword": "健身打卡",
-      "weight": 0.87,
+      "weight": 0.5800000000000001,
       "category": "fitness",
       "decay_days": 10,
       "priority": 1,
@@ -150,7 +150,7 @@
     },
     {
       "keyword": "跑步记录",
-      "weight": 0.601,
+      "weight": 0.5800000000000001,
       "category": "fitness",
       "decay_days": 14,
       "priority": 1,
@@ -158,7 +158,7 @@
     },
     {
       "keyword": "居家健身",
-      "weight": 0.6007,
+      "weight": 0.5800000000000001,
       "category": "fitness",
       "decay_days": 12,
       "priority": 1,
@@ -191,7 +191,7 @@
     },
     {
       "keyword": "周末短途游",
-      "weight": 0.6368,
+      "weight": 0.5800000000000001,
       "category": "travel",
       "decay_days": 15,
       "priority": 1,
@@ -199,7 +199,7 @@
     },
     {
       "keyword": "露营生活",
-      "weight": 0.594,
+      "weight": 0.5800000000000001,
       "category": "travel",
       "decay_days": 14,
       "priority": 1,
@@ -231,7 +231,7 @@
     },
     {
       "keyword": "猫咪日常",
-      "weight": 0.6364,
+      "weight": 0.5800000000000001,
       "category": "pet",
       "decay_days": 14,
       "priority": 1,
@@ -239,7 +239,7 @@
     },
     {
       "keyword": "狗狗日常",
-      "weight": 0.6223,
+      "weight": 0.5800000000000001,
       "category": "pet",
       "decay_days": 14,
       "priority": 1,
