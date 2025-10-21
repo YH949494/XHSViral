@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import json, os, math, random, datetime, urllib.request, urllib.error, time, re
+import json, os, math, random, datetime
 from collections import defaultdict
 
-# ---------- 基本参数 ----------
 TODAY = datetime.date.today()
 WEEK_OF = TODAY.isoformat()
 
-# 每类最多保留的热词数量
+# 每类最多保留多少个热词（可调）
 MAX_PER_CATEGORY = 12
-# 权重边界
+# 权重上下限
 MIN_W, MAX_W = 0.78, 0.96
 
-# 敏感词安全替换（可自行扩展）
+# 某些敏感词/功效词的安全替换（可按需扩展）
 SENSITIVE_MAP = {
     "减脂": "健康餐",
     "减肥": "塑形",
@@ -22,45 +21,33 @@ SENSITIVE_MAP = {
     "投资": "理财思路"
 }
 
-# 路径
+# 文件路径
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TRENDS_PATH = os.path.join(ROOT, "xhs_trends.json")
 CANDI_PATH  = os.path.join(ROOT, "candidates.json")
 
-# OpenHot（仅取小红书热榜）
-OPENHOT_XHS = "https://open-hot-api.vercel.app/api/getlist?type=xiaohongshu"
-
-
-# ---------- 工具函数 ----------
-def clamp(x, lo, hi): 
-    return max(lo, min(hi, x))
-
-def strip_json_comments(s: str) -> str:
-    s = re.sub(r'//.*', '', s)
-    s = re.sub(r'/\*[\s\S]*?\*/', '', s)
-    return s
+def clamp(x, lo, hi): return max(lo, min(hi, x))
 
 def load_json(path, default):
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
-            raw = f.read().strip()
-            if not raw:
-                return default
-            try:
-                return json.loads(raw)
-            except json.JSONDecodeError:
-                cleaned = strip_json_comments(raw)
-                return json.loads(cleaned)
+            return json.load(f)
     return default
 
 def decay_weight(w, days=7, half_life=10):
+    """
+    按“半衰期”方式衰减：w * 0.5 ** (days/half_life)
+    默认每 10 天衰减一半，可按需调整
+    """
     factor = 0.5 ** (days / half_life)
     return clamp(round(w * factor, 4), MIN_W - 0.2, 0.99)
 
 def ensure_fields(item):
+    # 统一字段，避免缺漏
     item.setdefault("decay_days", 10)
     item.setdefault("priority", 1)
     item.setdefault("sensitive_hint", False)
+    # 自动映射敏感替换
     for k, v in SENSITIVE_MAP.items():
         if k in item["keyword"]:
             item["sensitive_hint"] = True
@@ -68,87 +55,27 @@ def ensure_fields(item):
     return item
 
 def normalize_keyword(item):
-    # 若标注敏感且有安全替换 → 用替换词；否则保留原词（也可选择丢弃）
+    # 若标注敏感且有安全替换，则替换，否则丢弃（可选策略：这里是替换）
     if item.get("sensitive_hint") and item.get("safe_replacement"):
         item["keyword"] = item["safe_replacement"]
         item["sensitive_hint"] = False
         item.pop("safe_replacement", None)
     return item
 
-# 关键词 → 类目（简单启发式，可按需扩展）
-def categorize(kw: str) -> str:
-    m = kw.lower()
-    if any(t in m for t in ["穿搭","ootd","发色","口红","粉底","底妆","精华","护肤","修护","眼影","腮红","妆"]):
-        # 穿搭/美妆混合判断
-        if "穿搭" in kw or "ootd" in m:
-            return "fashion"
-        return "beauty"
-    if any(t in m for t in ["咖啡","料理","早餐","宵夜","餐","食","美食","食谱"]):
-        return "food"
-    if any(t in m for t in ["跑步","健身","瑜伽","运动","打卡"]):
-        return "fitness"
-    if any(t in m for t in ["旅行","vlog","露营","出行","攻略","机票","酒店","游"]):
-        return "travel"
-    if any(t in m for t in ["猫","狗","宠物","毛孩子"]):
-        return "pet"
-    if any(t in m for t in ["双十一","大促","清单","攻略"]):
-        return "shopping"
-    return "mixed"
-
-def http_get_json(url, retries=2, timeout=10):
-    ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121 Safari/537.36"
-    for i in range(retries + 1):
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": ua})
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                return json.loads(resp.read().decode("utf-8"))
-        except Exception as e:
-            if i < retries:
-                time.sleep(1.5 * (i + 1))
-                continue
-            print(f"[WARN] GET {url} failed: {e}")
-            return None
-
-def fetch_openhot_xhs():
-    """从 OpenHot 拉小红书热榜，转为候选 items"""
-    data = http_get_json(OPENHOT_XHS)
-    items = []
-    if isinstance(data, dict):
-        arr = data.get("data", [])
-        for d in arr:
-            title = (d.get("title") or "").strip()
-            if not title:
-                continue
-            items.append({
-                "keyword": title,
-                # 给个基础权重，带一点轻微扰动（避免全相同）
-                "weight": round(0.84 + random.uniform(0.0, 0.08), 2),
-                "category": categorize(title),
-                "decay_days": 7,
-                "priority": 2  # 热榜来源，优先级给高一点
-            })
-    return items
-
-
-# ---------- 主流程 ----------
 def main():
-    # 1) 读 candidates（你日常维护它）
+    # 读取 candidates（你每周维护这份）
     candi = load_json(CANDI_PATH, {"items": []})
     candidates = [ensure_fields(x) for x in candi.get("items", [])]
 
-    # 2) 拉 OpenHot（小红书热榜）
-    oh_items = fetch_openhot_xhs()
-    if oh_items:
-        candidates.extend(oh_items)
-
-    # 3) 读旧 trends（用于衰减）
+    # 读取旧 trends
     old = load_json(TRENDS_PATH, {"week_of": WEEK_OF, "region": "GLOBAL", "items": []})
     old_items = old.get("items", [])
 
-    # 旧词衰减 & 过滤过期
+    # 1) 先对旧词做衰减 & 过滤过期
     kept = []
     for it in old_items:
         it = ensure_fields(it)
+        # 若有 expires_at 且已过期，丢弃
         exp = it.get("expires_at")
         if exp:
             try:
@@ -156,46 +83,55 @@ def main():
                     continue
             except Exception:
                 pass
+        # 简单地按固定天数衰减：这里设为 7 天
         it["weight"] = decay_weight(it.get("weight", 0.85), days=7, half_life=it.get("decay_days", 10))
         kept.append(it)
 
-    # 去重集合（以 keyword 为准）
-    existing = set(x["keyword"] for x in kept)
+    # 2) 补充新词：按类别集合
+    # 先把已存在的关键词放入集合，避免重复
+    existing = set([x["keyword"] for x in kept])
 
-    # 候选排序（权重 + 优先级 + 轻微扰动）
+    # 打散候选，随机性+优先级（priority）加权
     def sort_key(x):
-        return (x.get("weight", 0.85)
-                + 0.03 * x.get("priority", 1)
-                + random.uniform(-0.02, 0.02))
+        base = x.get("weight", 0.85)
+        pri  = x.get("priority", 1)
+        return base + 0.03 * pri + random.uniform(-0.02, 0.02)
 
     candidates.sort(key=sort_key, reverse=True)
 
-    # 分桶
+    # 分类分桶
     buckets = defaultdict(list)
     for it in kept:
         buckets[it.get("category", "misc")].append(it)
 
-    # 逐个补充到各类，控制上限
+    # 将候选加入，直至每类达到 MAX_PER_CATEGORY
     for item in candidates:
-        item = normalize_keyword(ensure_fields(item))
         kw = item["keyword"]
+        cat = item.get("category", "misc")
         if kw in existing:
             continue
-        cat = item.get("category", "misc")
-        # 规范权重
-        item["weight"] = clamp(item.get("weight", 0.85), MIN_W, MAX_W)
-        item["weight"] = round(item["weight"], 2)
+        # 规范化字段 & 处理敏感替换
+        item = normalize_keyword(ensure_fields(item))
+        kw2 = item["keyword"]
+        if kw2 in existing:
+            continue
+
+        # 初始化权重区间
+        w = clamp(item.get("weight", 0.85), MIN_W, MAX_W)
+        item["weight"] = round(w, 2)
 
         if len(buckets[cat]) < MAX_PER_CATEGORY:
             buckets[cat].append(item)
-            existing.add(kw)
+            existing.add(kw2)
 
-    # 组装输出 & 类内排序
+    # 3) 重新拼装 items，并在每类内做一次排序（权重 & 优先级）
     new_items = []
     for cat, arr in buckets.items():
         arr.sort(key=lambda x: (x.get("weight", 0.85), x.get("priority", 1)), reverse=True)
+        # 保底裁剪
         new_items.extend(arr[:MAX_PER_CATEGORY])
 
+    # 4) 输出文件
     out = {
         "week_of": WEEK_OF,
         "region": old.get("region", "GLOBAL"),
@@ -205,7 +141,7 @@ def main():
     with open(TRENDS_PATH, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
 
-    print(f"[OK] Updated xhs_trends.json with {len(new_items)} items on {WEEK_OF}")
+    print(f"Updated {TRENDS_PATH} with {len(new_items)} items on {WEEK_OF}")
 
 if __name__ == "__main__":
     main()
