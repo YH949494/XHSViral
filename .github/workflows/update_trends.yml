@@ -2,8 +2,8 @@ name: Update XHS Trends
 
 on:
   schedule:
-    - cron: "0 2 * * 1"  # 每周一 02:00 UTC 运行（吉隆坡=UTC+8 → 周一 10:00）
-  workflow_dispatch: {}   # 允许你在 Actions 面板手动触发
+    - cron: "0 1 * * 1-5" #工作日每天 09:00（KL）
+  workflow_dispatch: {}
 
 permissions:
   contents: write   # 允许推送到仓库
